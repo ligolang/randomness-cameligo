@@ -1,6 +1,6 @@
 ligo_compiler=docker run --rm -v "$$PWD":"$$PWD" -w "$$PWD" ligolang/ligo:next
 # ligo_compiler=../../../ligo
-PROTOCOL_OPT=--protocol hangzhou
+# PROTOCOL_OPT=--protocol hangzhou
 JSON_OPT=--michelson-format json
 
 help:
@@ -20,25 +20,25 @@ random: random.tz random.json
 
 random.tz: contracts/main.mligo
 	@echo "Compiling smart contract to Michelson"
-	@$(ligo_compiler) compile contract $^ -e main $(PROTOCOL_OPT) > compiled/$@
+	@$(ligo_compiler) compile contract $^ -e main > compiled/$@
 
 random.json: contracts/main.mligo
 	@echo "Compiling smart contract to Michelson in JSON format"
-	@$(ligo_compiler) compile contract $^ $(JSON_OPT) -e main $(PROTOCOL_OPT) > compiled/$@
+	@$(ligo_compiler) compile contract $^ $(JSON_OPT) -e main > compiled/$@
 
 clean:
 	@echo "Removing Michelson files"
-	@rm compiled/*.tz compiled/*.json
+	@rm -f compiled/*.tz compiled/*.json
 
 test: test_ligo test_ligo_bytes
 
 test_ligo: test/test.mligo 
 	@echo "Running integration tests"
-	@$(ligo_compiler) run test $^ $(PROTOCOL_OPT)
+	@$(ligo_compiler) run test $^
 
 test_ligo_bytes: test/test_bytes.mligo 
 	@echo "Running integration tests (bytes conversion)"
-	@$(ligo_compiler) run test $^ $(PROTOCOL_OPT)
+	@$(ligo_compiler) run test $^
 
 deploy: node_modules deploy.js
 	@echo "Deploying contract"
