@@ -59,7 +59,7 @@ let reveal(p, s : Parameter.Types.reveal_param * storage) : operation list * sto
     in
     let new_locked : (address, tez) map = match Map.find_opt Tezos.sender s.locked_tez with
     | None -> failwith(Errors.wrong_user_balance)
-    | Some val -> 
+    | Some val ->   
         (match val - 10mutez with
         | None -> failwith(Errors.wrong_amount_locked_tez)
         | Some new_val -> Map.update Tezos.sender (Some(new_val)) s.locked_tez)
