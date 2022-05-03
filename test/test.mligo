@@ -14,7 +14,8 @@ let test =
         result_nat=(None : nat option);
         last_seed=init_seed;
         max=1000n;
-        min=100n
+        min=100n;
+        metadata=(Big_map.empty: (string, bytes) big_map);
     } in
     // originate Random smart contract
     let (addr,_,_) = Test.originate Random.main init_storage 0tez in
@@ -85,7 +86,8 @@ let test2 =
         result_nat=(None : nat option);
         last_seed=init_seed;
         max=1000n;
-        min=1n
+        min=1n;
+        metadata=(Big_map.empty: (string, bytes) big_map);
     } in
     // originate Random smart contract
     let (addr,_,_) = Test.originate Random.main init_storage 0tez in

@@ -11,7 +11,8 @@ module Types = struct
         result_nat : nat option;
         last_seed : nat;
         max : nat;
-        min: nat
+        min: nat;
+        metadata: (string, bytes) big_map;
     }
 end
 
