@@ -19,7 +19,7 @@ let test =
     } in
     // originate Random smart contract
     let (addr,_,_) = Test.originate Random.main init_storage 0tez in
-    let s_init = Test.get_storage addr in
+    let _s_init = Test.get_storage addr in
     //let () = Test.log(s_init) in
 
     let _test_should_works = (* chest key/payload and time matches -> OK *)
@@ -42,7 +42,7 @@ let test =
         let s : Random.storage = Test.get_storage addr in
         let response : bool = match Map.find_opt alice s.secrets with
         | None -> false
-        | Some x -> true
+        | Some _x -> true
         in
         let () = assert (response) in
 
@@ -54,7 +54,7 @@ let test =
         let s3 : Random.storage = Test.get_storage addr in
         let response2 : bool = match Map.find_opt bob s3.secrets with
         | None -> false
-        | Some x -> true
+        | Some _x -> true
         in
         let () = assert (response2) in
 
@@ -91,7 +91,7 @@ let test2 =
     } in
     // originate Random smart contract
     let (addr,_,_) = Test.originate Random.main init_storage 0tez in
-    let s_init = Test.get_storage addr in
+    let _s_init = Test.get_storage addr in
 
     let _test_rollD1000 = 
     
@@ -256,7 +256,7 @@ let test2 =
         let _ = Test.transfer_to_contract_exn x (Reveal(reveal_args)) 0mutez in
 
         // check locked tez before bob reveals
-        let bob_balance_of_before_reveal = Test.get_balance bob in
+        let _bob_balance_of_before_reveal = Test.get_balance bob in
         let storage_before_bob_reveals : Random.storage = Test.get_storage addr in
         let bob_locked_tez_opt : tez option = Map.find_opt bob storage_before_bob_reveals.locked_tez in
         let bob_locked_tez_before_reveal : tez =  match bob_locked_tez_opt with
