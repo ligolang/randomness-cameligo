@@ -1,7 +1,11 @@
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -62,13 +66,14 @@ var signer_1 = require("@taquito/signer");
 var taquito_1 = require("@taquito/taquito");
 var random_json_1 = __importDefault(require("../compiled/random.json"));
 var dotenv = __importStar(require("dotenv"));
+var utils_1 = require("@taquito/utils");
+var metadata_json_1 = __importDefault(require("./metadata.json"));
 dotenv.config(({ path: __dirname + '/.env' }));
 var rpc = process.env.RPC; //"http://127.0.0.1:8732"
 var pk = process.env.ADMIN_PK || undefined;
 var Tezos = new taquito_1.TezosToolkit(rpc);
 var signer = new signer_1.InMemorySigner(pk);
 Tezos.setProvider({ signer: signer });
-var admin = process.env.ADMIN_ADDRESS;
 var random_address = process.env.RANDOM_CONTRACT_ADDRESS || undefined;
 var result = undefined;
 var init_seed = 3268854739249;
@@ -86,6 +91,10 @@ function orig() {
             switch (_a.label) {
                 case 0:
                     random_store = {
+                        'metadata': taquito_1.MichelsonMap.fromLiteral({
+                            "": (0, utils_1.buf2hex)(Buffer.from("tezos-storage:contents")),
+                            contents: (0, utils_1.buf2hex)(Buffer.from(JSON.stringify(metadata_json_1["default"])))
+                        }),
                         'participants': participants,
                         'locked_tez': new taquito_1.MichelsonMap(),
                         'secrets': new taquito_1.MichelsonMap(),
@@ -105,7 +114,7 @@ function orig() {
                         })];
                 case 2:
                     random_originated = _a.sent();
-                    console.log("Waiting for RANDOM " + random_originated.contractAddress + " to be confirmed...");
+                    console.log("Waiting for RANDOM ".concat(random_originated.contractAddress, " to be confirmed..."));
                     return [4 /*yield*/, random_originated.confirmation(2)];
                 case 3:
                     _a.sent();
@@ -118,7 +127,7 @@ function orig() {
                 case 5:
                     error_1 = _a.sent();
                     console.log(error_1);
-                    return [3 /*break*/, 6];
+                    return [2 /*return*/, process.exit(1)];
                 case 6: return [2 /*return*/];
             }
         });

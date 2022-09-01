@@ -1,0 +1,72 @@
+Install node modules
+
+up to date, audited 56 packages in 386ms
+
+5 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+Deploying contract
+HttpRequestFailed: Request to https://hangzhounet.api.tez.ie/chains/main/blocks/head/context/constants failed
+    at request.onerror (/Users/laurentcanis/Workspace/ligo-template/randomness-cameligo/deploy/node_modules/@taquito/http-utils/dist/taquito-http-utils.umd.js:437:26)
+    at XMLHttpRequestEventTarget.dispatchEvent (/Users/laurentcanis/Workspace/ligo-template/randomness-cameligo/deploy/node_modules/xhr2-cookies/dist/xml-http-request-event-target.js:34:22)
+    at XMLHttpRequest._dispatchProgress (/Users/laurentcanis/Workspace/ligo-template/randomness-cameligo/deploy/node_modules/xhr2-cookies/dist/xml-http-request.js:358:14)
+    at XMLHttpRequest._onHttpRequestError (/Users/laurentcanis/Workspace/ligo-template/randomness-cameligo/deploy/node_modules/xhr2-cookies/dist/xml-http-request.js:350:14)
+    at ClientRequest.<anonymous> (/Users/laurentcanis/Workspace/ligo-template/randomness-cameligo/deploy/node_modules/xhr2-cookies/dist/xml-http-request.js:252:61)
+    at ClientRequest.emit (node:events:513:28)
+    at TLSSocket.socketErrorListener (node:_http_client:481:9)
+    at TLSSocket.emit (node:events:513:28)
+    at emitErrorNT (node:internal/streams/destroy:151:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:116:3) {
+  url: 'https://hangzhounet.api.tez.ie/chains/main/blocks/head/context/constants',
+  innerEvent: ProgressEvent {
+    type: 'error',
+    bubbles: false,
+    cancelable: false,
+    loaded: 0,
+    lengthComputable: false,
+    total: 0,
+    target: XMLHttpRequest {
+      listeners: {},
+      UNSENT: 0,
+      OPENED: 1,
+      HEADERS_RECEIVED: 2,
+      LOADING: 3,
+      DONE: 4,
+      onreadystatechange: null,
+      readyState: 4,
+      response: null,
+      responseText: '',
+      responseType: '',
+      status: 0,
+      statusText: '',
+      timeout: 30000,
+      upload: [XMLHttpRequestUpload],
+      responseUrl: '',
+      withCredentials: false,
+      _method: 'GET',
+      _url: [Url],
+      _sync: false,
+      _headers: [Object],
+      _loweredHeaders: [Object],
+      _mimeOverride: null,
+      _request: null,
+      _response: null,
+      _responseParts: null,
+      _responseHeaders: null,
+      _aborting: null,
+      _error: null,
+      _loadedBytes: 0,
+      _totalBytes: 0,
+      _lengthComputable: false,
+      _restrictedMethods: [Object],
+      _restrictedHeaders: [Object],
+      _privateHeaders: [Object],
+      _userAgent: 'Mozilla/5.0 (Darwin arm64) node.js/18.7.0 v8/10.2.154.13-node.9',
+      _anonymous: false,
+      onload: [Function (anonymous)],
+      ontimeout: [Function (anonymous)],
+      onerror: [Function (anonymous)]
+    }
+  }
+}
