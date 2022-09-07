@@ -2,16 +2,15 @@ import { InMemorySigner } from '@taquito/signer';
 import { TezosToolkit, MichelsonMap } from '@taquito/taquito';
 import random from '../compiled/random.json';
 import * as dotenv from 'dotenv'
+import { buf2hex } from "@taquito/utils";
+import metadata from "./metadata.json";
 
 dotenv.config(({path:__dirname+'/.env'}))
 
 const rpc = process.env.RPC; //"http://127.0.0.1:8732"
 const pk: string = process.env.ADMIN_PK || undefined;
 const Tezos = new TezosToolkit(rpc);
-const signer = new InMemorySigner(pk);
-Tezos.setProvider({ signer: signer })
 
-const admin = process.env.ADMIN_ADDRESS;
 let random_address = process.env.RANDOM_CONTRACT_ADDRESS || undefined;
 const result = undefined
 const init_seed = 3268854739249
@@ -27,6 +26,10 @@ const participants: Array<string> = [
 async function orig() {
 
     let random_store = {
+        'metadata': MichelsonMap.fromLiteral({
+            "": buf2hex(Buffer.from("tezos-storage:contents")),
+            contents: buf2hex(Buffer.from(JSON.stringify(metadata))),
+        }),
         'participants' : participants,
         'locked_tez' : new MichelsonMap(),
         'secrets' : new MichelsonMap(),
@@ -38,6 +41,12 @@ async function orig() {
     }
 
     try {
+        // Originate an Random contract
+        const signer = await InMemorySigner.fromSecretKey(
+            pk
+        );
+
+        Tezos.setProvider({ signer: signer })
         // Originate an Random contract
         if (random_address === undefined) {
             const random_originated = await Tezos.contract.originate({
@@ -55,6 +64,7 @@ async function orig() {
 
     } catch (error: any) {
         console.log(error)
+        return process.exit(1)
     }
 }
 
