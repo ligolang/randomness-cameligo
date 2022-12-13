@@ -1,5 +1,7 @@
 #import "../contracts/main.mligo" "Random"
 
+let create_bytes (payload: bytes) (secret:nat) : (bytes * bytes) =
+    (Crypto.sha512 (Bytes.pack (payload, secret)), payload)
 
 let test =
     let alice: address = Test.nth_bootstrap_account 0 in
@@ -9,7 +11,7 @@ let test =
     let init_storage : Random.Storage.Types.t = { 
         participants= Set.add alice (Set.add bob (Set.empty : address set));
         locked_tez=(Map.empty : (address, tez) map);
-        secrets=(Map.empty: (address, chest) map); 
+        secrets=(Map.empty: (address, bytes) map); 
         decoded_payloads=(Map.empty: (address, bytes) map); 
         result_nat=(None : nat option);
         last_seed=init_seed;
@@ -22,21 +24,21 @@ let test =
     let _s_init = Test.get_storage addr in
     //let () = Test.log(s_init) in
 
-    let _test_should_works = (* chest key/payload and time matches -> OK *)
+    let _test_should_works = (* bytes key/payload and time matches -> OK *)
     
         let payload : bytes = 0x0a in
         let time_secret : nat = 10n in 
-        let (my_chest,chest_key) = Test.create_chest payload time_secret in
+        let (my_bytes,bytes) = create_bytes payload time_secret in
 
         let payload2 : bytes = 0x0b in
         let time_secret2 : nat = 99n in 
-        let (my_chest2,chest_key2) = Test.create_chest payload2 time_secret2 in
+        let (my_bytes2,bytes2) = create_bytes payload2 time_secret2 in
 
         let x : Random.parameter contract = Test.to_contract addr in
 
         // alice commits
         let () = Test.set_source alice in
-        let commit_args : Random.Parameter.Types.commit_param = {secret_action=my_chest} in
+        let commit_args : Random.Parameter.Types.commit_param = {secret_action=my_bytes} in
         let _ = Test.transfer_to_contract_exn x (Commit(commit_args)) 10mutez in
 
         let s : Random.storage = Test.get_storage addr in
@@ -48,7 +50,7 @@ let test =
 
         // bob commits
         let () = Test.set_source bob in
-        let commit_args2 : Random.Parameter.Types.commit_param = {secret_action=my_chest2} in
+        let commit_args2 : Random.Parameter.Types.commit_param = {secret_action=my_bytes2} in
         let _ = Test.transfer_to_contract_exn x (Commit(commit_args2)) 10mutez in
 
         let s3 : Random.storage = Test.get_storage addr in
@@ -60,12 +62,12 @@ let test =
 
         // alice reveals
         let () = Test.set_source alice in
-        let reveal_args : Random.Parameter.Types.reveal_param = (chest_key, time_secret) in
+        let reveal_args : Random.Parameter.Types.reveal_param = (bytes, time_secret) in
         let _ = Test.transfer_to_contract_exn x (Reveal(reveal_args)) 0mutez in
 
         // bob reveals
         let () = Test.set_source bob in
-        let reveal_args2 : Random.Parameter.Types.reveal_param = (chest_key2, time_secret2) in
+        let reveal_args2 : Random.Parameter.Types.reveal_param = (bytes2, time_secret2) in
         let _ = Test.transfer_to_contract_exn x (Reveal(reveal_args2)) 0mutez in
         
         let s2 : Random.storage = Test.get_storage addr in
@@ -81,7 +83,7 @@ let test2 =
     let init_storage : Random.Storage.Types.t = { 
         participants= Set.add alice (Set.add bob (Set.empty : address set));
         locked_tez=(Map.empty : (address, tez) map);
-        secrets=(Map.empty: (address, chest) map); 
+        secrets=(Map.empty: (address, bytes) map); 
         decoded_payloads=(Map.empty: (address, bytes) map); 
         result_nat=(None : nat option);
         last_seed=init_seed;
@@ -97,32 +99,32 @@ let test2 =
     
         let payload : bytes = 0x0a1234 in
         let time_secret : nat = 10n in 
-        let (my_chest,chest_key) = Test.create_chest payload time_secret in
+        let (my_bytes,bytes) = create_bytes payload time_secret in
 
         let payload2 : bytes = 0x0b455469 in
         let time_secret2 : nat = 84n in 
-        let (my_chest2,chest_key2) = Test.create_chest payload2 time_secret2 in
+        let (my_bytes2,bytes2) = create_bytes payload2 time_secret2 in
 
         let x : Random.parameter contract = Test.to_contract addr in
 
         // alice commits
         let () = Test.set_source alice in
-        let commit_args : Random.Parameter.Types.commit_param = {secret_action=my_chest} in
+        let commit_args : Random.Parameter.Types.commit_param = {secret_action=my_bytes} in
         let _ = Test.transfer_to_contract_exn x (Commit(commit_args)) 10mutez in
 
         // bob commits
         let () = Test.set_source bob in
-        let commit_args2 : Random.Parameter.Types.commit_param = {secret_action=my_chest2} in
+        let commit_args2 : Random.Parameter.Types.commit_param = {secret_action=my_bytes2} in
         let _ = Test.transfer_to_contract_exn x (Commit(commit_args2)) 10mutez in
 
         // alice reveals
         let () = Test.set_source alice in
-        let reveal_args : Random.Parameter.Types.reveal_param = (chest_key, time_secret) in
+        let reveal_args : Random.Parameter.Types.reveal_param = (bytes, time_secret) in
         let _ = Test.transfer_to_contract_exn x (Reveal(reveal_args)) 0mutez in
 
         // bob reveals
         let () = Test.set_source bob in
-        let reveal_args2 : Random.Parameter.Types.reveal_param = (chest_key2, time_secret2) in
+        let reveal_args2 : Random.Parameter.Types.reveal_param = (bytes2, time_secret2) in
         let _ = Test.transfer_to_contract_exn x (Reveal(reveal_args2)) 0mutez in
         
         let s2 : Random.storage = Test.get_storage addr in
@@ -134,11 +136,11 @@ let test2 =
     
         let payload : bytes = 0x0a1234 in
         let time_secret : nat = 10n in 
-        let (my_chest,chest_key) = Test.create_chest payload time_secret in
+        let (my_bytes,bytes) = create_bytes payload time_secret in
 
         let payload2 : bytes = 0x0b455469 in
         let time_secret2 : nat = 84n in 
-        let (my_chest2,chest_key2) = Test.create_chest payload2 time_secret2 in
+        let (my_bytes2,bytes2) = create_bytes payload2 time_secret2 in
 
 
         let x : Random.parameter contract = Test.to_contract addr in
@@ -151,22 +153,22 @@ let test2 =
 
         // alice commits
         let () = Test.set_source alice in
-        let commit_args : Random.Parameter.Types.commit_param = {secret_action=my_chest} in
+        let commit_args : Random.Parameter.Types.commit_param = {secret_action=my_bytes} in
         let _ = Test.transfer_to_contract_exn x (Commit(commit_args)) 10mutez in
 
         // bob commits
         let () = Test.set_source bob in
-        let commit_args2 : Random.Parameter.Types.commit_param = {secret_action=my_chest2} in
+        let commit_args2 : Random.Parameter.Types.commit_param = {secret_action=my_bytes2} in
         let _ = Test.transfer_to_contract_exn x (Commit(commit_args2)) 10mutez in
 
         // alice reveals
         let () = Test.set_source alice in
-        let reveal_args : Random.Parameter.Types.reveal_param = (chest_key, time_secret) in
+        let reveal_args : Random.Parameter.Types.reveal_param = (bytes, time_secret) in
         let _ = Test.transfer_to_contract_exn x (Reveal(reveal_args)) 0mutez in
 
         // bob reveals
         let () = Test.set_source bob in
-        let reveal_args2 : Random.Parameter.Types.reveal_param = (chest_key2, time_secret2) in
+        let reveal_args2 : Random.Parameter.Types.reveal_param = (bytes2, time_secret2) in
         let _ = Test.transfer_to_contract_exn x (Reveal(reveal_args2)) 0mutez in
 
         let s2 : Random.storage = Test.get_storage addr in
@@ -181,11 +183,11 @@ let test2 =
     
         let payload : bytes = 0x0a1234 in
         let time_secret : nat = 10n in 
-        let (my_chest,chest_key) = Test.create_chest payload time_secret in
+        let (my_bytes,bytes) = create_bytes payload time_secret in
 
         let payload2 : bytes = 0x0b455469 in
         let time_secret2 : nat = 84n in 
-        let (my_chest2,chest_key2) = Test.create_chest payload2 time_secret2 in
+        let (my_bytes2,bytes2) = create_bytes payload2 time_secret2 in
 
         let x : Random.parameter contract = Test.to_contract addr in
 
@@ -197,22 +199,22 @@ let test2 =
 
         // alice commits
         let () = Test.set_source alice in
-        let commit_args : Random.Parameter.Types.commit_param = {secret_action=my_chest} in
+        let commit_args : Random.Parameter.Types.commit_param = {secret_action=my_bytes} in
         let _ = Test.transfer_to_contract_exn x (Commit(commit_args)) 10mutez in
 
         // bob commits
         let () = Test.set_source bob in
-        let commit_args2 : Random.Parameter.Types.commit_param = {secret_action=my_chest2} in
+        let commit_args2 : Random.Parameter.Types.commit_param = {secret_action=my_bytes2} in
         let _ = Test.transfer_to_contract_exn x (Commit(commit_args2)) 10mutez in
 
         // alice reveals
         let () = Test.set_source alice in
-        let reveal_args : Random.Parameter.Types.reveal_param = (chest_key, time_secret) in
+        let reveal_args : Random.Parameter.Types.reveal_param = (bytes, time_secret) in
         let _ = Test.transfer_to_contract_exn x (Reveal(reveal_args)) 0mutez in
 
         // bob reveals
         let () = Test.set_source bob in
-        let reveal_args2 : Random.Parameter.Types.reveal_param = (chest_key2, time_secret2) in
+        let reveal_args2 : Random.Parameter.Types.reveal_param = (bytes2, time_secret2) in
         let _ = Test.transfer_to_contract_exn x (Reveal(reveal_args2)) 0mutez in
         
         let s2 : Random.storage = Test.get_storage addr in
@@ -227,11 +229,11 @@ let test2 =
     
         let payload : bytes = 0x0a1234 in
         let time_secret : nat = 10n in 
-        let (my_chest,chest_key) = Test.create_chest payload time_secret in
+        let (my_bytes,bytes) = create_bytes payload time_secret in
 
         let payload2 : bytes = 0x0b455469 in
         let time_secret2 : nat = 84n in 
-        let (my_chest2,chest_key2) = Test.create_chest payload2 time_secret2 in
+        let (my_bytes2,bytes2) = create_bytes payload2 time_secret2 in
 
         let x : Random.parameter contract = Test.to_contract addr in
 
@@ -242,17 +244,17 @@ let test2 =
 
         // alice commits
         let () = Test.set_source alice in
-        let commit_args : Random.Parameter.Types.commit_param = {secret_action=my_chest} in
+        let commit_args : Random.Parameter.Types.commit_param = {secret_action=my_bytes} in
         let _ = Test.transfer_to_contract_exn x (Commit(commit_args)) 10mutez in
 
         // bob commits
         let () = Test.set_source bob in
-        let commit_args2 : Random.Parameter.Types.commit_param = {secret_action=my_chest2} in
+        let commit_args2 : Random.Parameter.Types.commit_param = {secret_action=my_bytes2} in
         let _ = Test.transfer_to_contract_exn x (Commit(commit_args2)) 10mutez in
 
         // alice reveals
         let () = Test.set_source alice in
-        let reveal_args : Random.Parameter.Types.reveal_param = (chest_key, time_secret) in
+        let reveal_args : Random.Parameter.Types.reveal_param = (bytes, time_secret) in
         let _ = Test.transfer_to_contract_exn x (Reveal(reveal_args)) 0mutez in
 
         // check locked tez before bob reveals
@@ -267,7 +269,7 @@ let test2 =
 
         // bob reveals
         let () = Test.set_source bob in
-        let reveal_args2 : Random.Parameter.Types.reveal_param = (chest_key2, time_secret2) in
+        let reveal_args2 : Random.Parameter.Types.reveal_param = (bytes2, time_secret2) in
         let _ = Test.transfer_to_contract_exn x (Reveal(reveal_args2)) 0mutez in
         
         // check locked tez after bob reveals

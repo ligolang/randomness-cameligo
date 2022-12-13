@@ -6,7 +6,7 @@ module Types = struct
     type t = {
         participants : address set;
         locked_tez : (address, tez) map;
-        secrets : (address, chest) map;
+        secrets : (address, bytes) map;
         decoded_payloads: (address, bytes) map;
         result_nat : nat option;
         last_seed : nat;
@@ -44,9 +44,9 @@ module Utils = struct
         in
         List.fold hashthemall pl (None : bytes option)
 
-    // Compute a seed based on decoded chest payloads
+    // Compute a seed based on decoded bytes payloads
     let build_random_nat(payloads, min, max, last_seed : (address, bytes) map * nat * nat * nat) : nat * nat =
-        // Compute a seed based on decoded chest payloads
+        // Compute a seed based on decoded bytes payloads
         let seed_bytes = build_seed_bytes payloads in 
         // convert hash seed into nat seed
         let seed : nat = match seed_bytes with 
