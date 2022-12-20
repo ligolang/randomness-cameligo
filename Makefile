@@ -19,12 +19,12 @@ compile: random
 
 random: random.tz random.json
 
-random.tz: contracts/main.mligo
+random.tz: src/main.mligo
 	@if [ ! -d ./compiled ]; then mkdir ./compiled ; fi
 	@echo "Compiling smart contract to Michelson"
 	@$(ligo_compiler) compile contract $^ -e main $(protocol_opt) > compiled/$@
 
-random.json: contracts/main.mligo
+random.json: src/main.mligo
 	@if [ ! -d ./compiled ]; then mkdir ./compiled ; fi
 	@echo "Compiling smart contract to Michelson in JSON format"
 	@$(ligo_compiler) compile contract $^ $(JSON_OPT) -e main $(protocol_opt) > compiled/$@
@@ -44,14 +44,13 @@ test_ligo_bytes: test/test_bytes.mligo
 	@$(ligo_compiler) run test $^ $(protocol_opt)
 
 deploy: node_modules deploy.js
-	@echo "Deploying contract"
-	@node deploy/deploy.js
 
 deploy.js:
-	@@if [ ! -f ./deploy/metadata.json ]; then cp deploy/metadata.json.dist \
-        deploy/metadata.json ; fi
-	@cd deploy && $(tsc) deploy.ts --resolveJsonModule -esModuleInterop
+	@if [ ! -f ./deploy/metadata.json ]; then cp deploy/metadata.json.dist deploy/metadata.json ; fi
+	@echo "Running deploy script\n"
+	@cd deploy && npm start
 
 node_modules:
-	@echo "Install node modules"
+	@echo "Installing deploy script dependencies"
 	@cd deploy && npm install
+	@echo ""

@@ -2,6 +2,7 @@
 .DS_Store
 .ligo/
 _esy/
+/compiled
 **/compiled
 /deploy/metadata.json
-/deploy/deploy.js
+**/.env
