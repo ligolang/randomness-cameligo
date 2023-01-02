@@ -1,4 +1,4 @@
-#import "../contracts/bytes_utils.mligo" "Convert"
+#import "../src/bytes_utils.mligo" "Convert"
 
 
 let test =

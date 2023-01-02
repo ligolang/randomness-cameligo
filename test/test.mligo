@@ -1,4 +1,4 @@
-#import "../contracts/main.mligo" "Random"
+#import "../src/main.mligo" "Random"
 
 let create_bytes (payload: bytes) (secret:nat) : (bytes * bytes) =
     (Crypto.sha512 (Bytes.pack (payload, secret)), payload)
