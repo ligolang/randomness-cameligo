@@ -91,7 +91,7 @@ let reset (param, store : Parameter.Types.reset_param * storage) : operation lis
     })
 
 
-let main(ep, store : parameter * storage) : return =
+let main(ep : parameter) (store : storage) : return =
     match ep with 
     | Commit(p) -> commit(p, store)
     | Reveal(p) -> reveal(p, store)
