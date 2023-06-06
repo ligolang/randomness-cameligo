@@ -17,7 +17,7 @@ let commit(p, st : Parameter.Types.commit_param * storage) : operation list * st
     in
     let new_locked : (address, tez) map = match Map.find_opt (Tezos.get_sender ()) st.locked_tez with
     | None -> Map.add (Tezos.get_sender ()) (Tezos.get_amount ()) st.locked_tez
-    | Some val -> Map.update (Tezos.get_sender ()) (Some(val + Tezos.get_amount ())) st.locked_tez
+    | Some v -> Map.update (Tezos.get_sender ()) (Some(v + Tezos.get_amount ())) st.locked_tez
     in
     (([] : operation list), { st with secrets=new_secrets; locked_tez=new_locked })
     
@@ -59,8 +59,8 @@ let reveal(p, s : Parameter.Types.reveal_param * storage) : operation list * sto
     in
     let new_locked : (address, tez) map = match Map.find_opt (Tezos.get_sender ()) s.locked_tez with
     | None -> failwith(Errors.wrong_user_balance)
-    | Some val ->   
-        (match val - 10mutez with
+    | Some v ->   
+        (match v - 10mutez with
         | None -> failwith(Errors.wrong_amount_locked_tez)
         | Some new_val -> Map.update (Tezos.get_sender ()) (Some(new_val)) s.locked_tez)
     in
