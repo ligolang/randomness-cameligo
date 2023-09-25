@@ -4,7 +4,6 @@
 
 
 type storage = Storage.Types.t
-type parameter = Parameter.Types.t
 type return = operation list * storage
 
  // Sender commits its bytes
