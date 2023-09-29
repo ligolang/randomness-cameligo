@@ -20,8 +20,8 @@ let test =
         metadata=(Big_map.empty: (string, bytes) big_map);
     } in
     // originate Random smart contract
-    let (addr,_,_) = Test.originate_module (contract_of Random) init_storage 0tez in
-    let _s_init = Test.get_storage addr in
+    let orig = Test.originate (contract_of Random) init_storage 0tez in
+    let _s_init = Test.get_storage orig.addr in
     //let () = Test.log(s_init) in
 
     let _test_should_works = (* bytes key/payload and time matches -> OK *)
@@ -34,43 +34,42 @@ let test =
         let time_secret2 : nat = 99n in
         let (my_bytes2,bytes2) = create_bytes payload2 time_secret2 in
 
-        let x : Random parameter_of contract = Test.to_contract addr in
 
         // alice commits
         let () = Test.set_source alice in
         let commit_args : Random.Parameter.Types.commit_param = {secret_action=my_bytes} in
-        let _ = Test.transfer_to_contract_exn x (Commit(commit_args)) 10mutez in
+        let _ = Test.transfer_exn orig.addr(Commit(commit_args)) 10mutez in
 
-        let s : Random.storage = Test.get_storage addr in
+        let s : Random.storage = Test.get_storage orig.addr in
         let response : bool = match Map.find_opt alice s.secrets with
         | None -> false
-        | Some _x -> true
+        | Some _addr -> true
         in
         let () = assert (response) in
 
         // bob commits
         let () = Test.set_source bob in
         let commit_args2 : Random.Parameter.Types.commit_param = {secret_action=my_bytes2} in
-        let _ = Test.transfer_to_contract_exn x (Commit(commit_args2)) 10mutez in
+        let _ = Test.transfer_exn orig.addr(Commit(commit_args2)) 10mutez in
 
-        let s3 : Random.storage = Test.get_storage addr in
+        let s3 : Random.storage = Test.get_storage orig.addr in
         let response2 : bool = match Map.find_opt bob s3.secrets with
         | None -> false
-        | Some _x -> true
+        | Some _addr -> true
         in
         let () = assert (response2) in
 
         // alice reveals
         let () = Test.set_source alice in
         let reveal_args : Random.Parameter.Types.reveal_param = (bytes, time_secret) in
-        let _ = Test.transfer_to_contract_exn x (Reveal(reveal_args)) 0mutez in
+        let _ = Test.transfer_exn orig.addr(Reveal(reveal_args)) 0mutez in
 
         // bob reveals
         let () = Test.set_source bob in
         let reveal_args2 : Random.Parameter.Types.reveal_param = (bytes2, time_secret2) in
-        let _ = Test.transfer_to_contract_exn x (Reveal(reveal_args2)) 0mutez in
+        let _ = Test.transfer_exn orig.addr(Reveal(reveal_args2)) 0mutez in
 
-        let s2 : Random.storage = Test.get_storage addr in
+        let s2 : Random.storage = Test.get_storage orig.addr in
         let () = assert (s2.result_nat <> (None : nat option)) in
         "OK"
     in
@@ -92,8 +91,8 @@ let test2 =
         metadata=(Big_map.empty: (string, bytes) big_map);
     } in
     // originate Random smart contract
-    let (addr,_,_) = Test.originate_module (contract_of Random) init_storage 0tez in
-    let _s_init = Test.get_storage addr in
+    let orig = Test.originate (contract_of Random) init_storage 0tez in
+    let _s_init = Test.get_storage orig.addr in
 
     let _test_rollD1000 =
 
@@ -105,29 +104,28 @@ let test2 =
         let time_secret2 : nat = 84n in
         let (my_bytes2,bytes2) = create_bytes payload2 time_secret2 in
 
-        let x : Random parameter_of contract = Test.to_contract addr in
 
         // alice commits
         let () = Test.set_source alice in
         let commit_args : Random.Parameter.Types.commit_param = {secret_action=my_bytes} in
-        let _ = Test.transfer_to_contract_exn x (Commit(commit_args)) 10mutez in
+        let _ = Test.transfer_exn orig.addr(Commit(commit_args)) 10mutez in
 
         // bob commits
         let () = Test.set_source bob in
         let commit_args2 : Random.Parameter.Types.commit_param = {secret_action=my_bytes2} in
-        let _ = Test.transfer_to_contract_exn x (Commit(commit_args2)) 10mutez in
+        let _ = Test.transfer_exn orig.addr(Commit(commit_args2)) 10mutez in
 
         // alice reveals
         let () = Test.set_source alice in
         let reveal_args : Random.Parameter.Types.reveal_param = (bytes, time_secret) in
-        let _ = Test.transfer_to_contract_exn x (Reveal(reveal_args)) 0mutez in
+        let _ = Test.transfer_exn orig.addr(Reveal(reveal_args)) 0mutez in
 
         // bob reveals
         let () = Test.set_source bob in
         let reveal_args2 : Random.Parameter.Types.reveal_param = (bytes2, time_secret2) in
-        let _ = Test.transfer_to_contract_exn x (Reveal(reveal_args2)) 0mutez in
+        let _ = Test.transfer_exn orig.addr(Reveal(reveal_args2)) 0mutez in
 
-        let s2 : Random.storage = Test.get_storage addr in
+        let s2 : Random.storage = Test.get_storage orig.addr in
         let () = Test.log(s2.result_nat) in
         let () = assert (s2.result_nat <> (None : nat option)) in
         "OK"
@@ -143,35 +141,34 @@ let test2 =
         let (my_bytes2,bytes2) = create_bytes payload2 time_secret2 in
 
 
-        let x : Random parameter_of contract = Test.to_contract addr in
 
         // alice reset
         let () = Test.set_source alice in
         let reset_args : Random.Parameter.Types.reset_param = {min=1n; max=20n} in
-        let _ = Test.transfer_to_contract_exn x (Reset(reset_args)) 0mutez in
+        let _ = Test.transfer_exn orig.addr(Reset(reset_args)) 0mutez in
 
 
         // alice commits
         let () = Test.set_source alice in
         let commit_args : Random.Parameter.Types.commit_param = {secret_action=my_bytes} in
-        let _ = Test.transfer_to_contract_exn x (Commit(commit_args)) 10mutez in
+        let _ = Test.transfer_exn orig.addr(Commit(commit_args)) 10mutez in
 
         // bob commits
         let () = Test.set_source bob in
         let commit_args2 : Random.Parameter.Types.commit_param = {secret_action=my_bytes2} in
-        let _ = Test.transfer_to_contract_exn x (Commit(commit_args2)) 10mutez in
+        let _ = Test.transfer_exn orig.addr(Commit(commit_args2)) 10mutez in
 
         // alice reveals
         let () = Test.set_source alice in
         let reveal_args : Random.Parameter.Types.reveal_param = (bytes, time_secret) in
-        let _ = Test.transfer_to_contract_exn x (Reveal(reveal_args)) 0mutez in
+        let _ = Test.transfer_exn orig.addr(Reveal(reveal_args)) 0mutez in
 
         // bob reveals
         let () = Test.set_source bob in
         let reveal_args2 : Random.Parameter.Types.reveal_param = (bytes2, time_secret2) in
-        let _ = Test.transfer_to_contract_exn x (Reveal(reveal_args2)) 0mutez in
+        let _ = Test.transfer_exn orig.addr(Reveal(reveal_args2)) 0mutez in
 
-        let s2 : Random.storage = Test.get_storage addr in
+        let s2 : Random.storage = Test.get_storage orig.addr in
         let () = Test.log(s2.result_nat) in
         let () = assert (s2.result_nat <> (None : nat option)) in
         let result : nat = Option.unopt s2.result_nat in
@@ -189,35 +186,34 @@ let test2 =
         let time_secret2 : nat = 84n in
         let (my_bytes2,bytes2) = create_bytes payload2 time_secret2 in
 
-        let x : Random parameter_of contract = Test.to_contract addr in
 
         // alice reset
         let () = Test.set_source alice in
         let reset_args : Random.Parameter.Types.reset_param = {min=1n; max=20n} in
-        let _ = Test.transfer_to_contract_exn x (Reset(reset_args)) 0mutez in
+        let _ = Test.transfer_exn orig.addr(Reset(reset_args)) 0mutez in
 
 
         // alice commits
         let () = Test.set_source alice in
         let commit_args : Random.Parameter.Types.commit_param = {secret_action=my_bytes} in
-        let _ = Test.transfer_to_contract_exn x (Commit(commit_args)) 10mutez in
+        let _ = Test.transfer_exn orig.addr(Commit(commit_args)) 10mutez in
 
         // bob commits
         let () = Test.set_source bob in
         let commit_args2 : Random.Parameter.Types.commit_param = {secret_action=my_bytes2} in
-        let _ = Test.transfer_to_contract_exn x (Commit(commit_args2)) 10mutez in
+        let _ = Test.transfer_exn orig.addr(Commit(commit_args2)) 10mutez in
 
         // alice reveals
         let () = Test.set_source alice in
         let reveal_args : Random.Parameter.Types.reveal_param = (bytes, time_secret) in
-        let _ = Test.transfer_to_contract_exn x (Reveal(reveal_args)) 0mutez in
+        let _ = Test.transfer_exn orig.addr(Reveal(reveal_args)) 0mutez in
 
         // bob reveals
         let () = Test.set_source bob in
         let reveal_args2 : Random.Parameter.Types.reveal_param = (bytes2, time_secret2) in
-        let _ = Test.transfer_to_contract_exn x (Reveal(reveal_args2)) 0mutez in
+        let _ = Test.transfer_exn orig.addr(Reveal(reveal_args2)) 0mutez in
 
-        let s2 : Random.storage = Test.get_storage addr in
+        let s2 : Random.storage = Test.get_storage orig.addr in
         let () = Test.log(s2.result_nat) in
         let () = assert (s2.result_nat <> (None : nat option)) in
         let result : nat = Option.unopt s2.result_nat in
@@ -235,31 +231,30 @@ let test2 =
         let time_secret2 : nat = 84n in
         let (my_bytes2,bytes2) = create_bytes payload2 time_secret2 in
 
-        let x : Random parameter_of contract = Test.to_contract addr in
 
         // alice reset
         let () = Test.set_source alice in
         let reset_args : Random.Parameter.Types.reset_param = {min=1n; max=20n} in
-        let _ = Test.transfer_to_contract_exn x (Reset(reset_args)) 0mutez in
+        let _ = Test.transfer_exn orig.addr(Reset(reset_args)) 0mutez in
 
         // alice commits
         let () = Test.set_source alice in
         let commit_args : Random.Parameter.Types.commit_param = {secret_action=my_bytes} in
-        let _ = Test.transfer_to_contract_exn x (Commit(commit_args)) 10mutez in
+        let _ = Test.transfer_exn orig.addr(Commit(commit_args)) 10mutez in
 
         // bob commits
         let () = Test.set_source bob in
         let commit_args2 : Random.Parameter.Types.commit_param = {secret_action=my_bytes2} in
-        let _ = Test.transfer_to_contract_exn x (Commit(commit_args2)) 10mutez in
+        let _ = Test.transfer_exn orig.addr(Commit(commit_args2)) 10mutez in
 
         // alice reveals
         let () = Test.set_source alice in
         let reveal_args : Random.Parameter.Types.reveal_param = (bytes, time_secret) in
-        let _ = Test.transfer_to_contract_exn x (Reveal(reveal_args)) 0mutez in
+        let _ = Test.transfer_exn orig.addr(Reveal(reveal_args)) 0mutez in
 
         // check locked tez before bob reveals
-        let _bob_balance_of_before_reveal = Test.get_balance bob in
-        let storage_before_bob_reveals : Random.storage = Test.get_storage addr in
+        let _bob_balance_of_before_reveal = Test.get_balance_of_address bob in
+        let storage_before_bob_reveals : Random.storage = Test.get_storage orig.addr in
         let bob_locked_tez_opt : tez option = Map.find_opt bob storage_before_bob_reveals.locked_tez in
         let bob_locked_tez_before_reveal : tez =  match bob_locked_tez_opt with
         | None -> 0tez
@@ -270,10 +265,10 @@ let test2 =
         // bob reveals
         let () = Test.set_source bob in
         let reveal_args2 : Random.Parameter.Types.reveal_param = (bytes2, time_secret2) in
-        let _ = Test.transfer_to_contract_exn x (Reveal(reveal_args2)) 0mutez in
+        let _ = Test.transfer_exn orig.addr(Reveal(reveal_args2)) 0mutez in
 
         // check locked tez after bob reveals
-        let storage_after_bob_reveals : Random.storage = Test.get_storage addr in
+        let storage_after_bob_reveals : Random.storage = Test.get_storage orig.addr in
         let bob_locked_tez_opt : tez option = Map.find_opt bob storage_after_bob_reveals.locked_tez in
         let bob_locked_tez_after_reveal : tez =  match bob_locked_tez_opt with
         | None -> 0tez
@@ -281,7 +276,7 @@ let test2 =
         in
         let () = assert(bob_locked_tez_after_reveal = 0mutez) in
 
-        let s2 : Random.storage = Test.get_storage addr in
+        let s2 : Random.storage = Test.get_storage orig.addr in
         let () = Test.log(s2.result_nat) in
         let () = assert (s2.result_nat <> (None : nat option)) in
         let result : nat = Option.unopt s2.result_nat in
